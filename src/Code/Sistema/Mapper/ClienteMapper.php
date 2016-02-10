@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManager;
 class ClienteMapper
 {
     private $em;
+    private $entityName = 'Code\\Sistema\\Entity\\Cliente';
 
     public function __construct(EntityManager $em)
     {
@@ -22,8 +23,13 @@ class ClienteMapper
     }
 
     public function fetchAll(){
-        $clientes = $this->em->getRepository()->findAll();
+        $clientes = $this->em->getRepository($this->entityName)->findAll();
         return $clientes;
+    }
+
+    public function findById($id){
+        $cliente = $this->em->getRepository($this->entityName)->find($id);
+        return $cliente;
     }
 
     public function insert(Cliente $cliente)
@@ -39,11 +45,25 @@ class ClienteMapper
         ];
     }
 
-    public function update()
+    public function update(Cliente $cliente)
     {
+        $this->em->merge($cliente);
+        $this->em->flush($cliente);
 
+        return [
+            'success' => true,
+            'id' => $cliente->getId(),
+            'nome' => $cliente->getNome(),
+            'email' => $cliente->getEmail(),
+        ];
     }
-    public function delete(){
+    public function delete(Cliente $cliente){
 
+        $this->em->remove($cliente);
+        $this->em->flush($cliente);
+
+        return [
+            'success' => true
+        ];
     }
 }
