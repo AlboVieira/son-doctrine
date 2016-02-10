@@ -1,0 +1,8 @@
+//acesso ao doctrine
+php ../vendor/doctrine/orm/bin/doctrine
+
+//verifica as entidades
+php ../vendor/doctrine/orm/bin/doctrine orm:info
+
+//cria as tabelas a partir das entidades
+php ../vendor/doctrine/orm/bin/doctrine orm:schema-tool:create
