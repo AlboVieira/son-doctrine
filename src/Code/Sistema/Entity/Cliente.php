@@ -2,6 +2,7 @@
 
 namespace Code\Sistema\Entity;
 
+use Code\Sistema\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -9,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="clientes")
  *
  */
-class Cliente
+class Cliente extends AbstractEntity
 {
    /**
     * @ORM\Column(name="id", type="integer", nullable=false)

@@ -11,21 +11,10 @@ namespace Code\Sistema\Service;
 use Code\Sistema\Entity\Cliente;
 use Code\Sistema\Mapper\ClienteMapper;
 use Symfony\Component\HttpKernel\Client;
+use Code\Sistema\Service\AbstractService;
 
-class ClienteService
+class ClienteService extends AbstractService
 {
-    private $cliente;
-    private $clienteMapper;
-
-    /**
-     * ClienteService constructor.
-     * @param $cliente
-     */
-    public function __construct(Cliente $cliente, ClienteMapper $clienteMapper)
-    {
-        $this->cliente = $cliente;
-        $this->clienteMapper = $clienteMapper;
-    }
 
     /**
      * @param $cliente
@@ -33,10 +22,10 @@ class ClienteService
      */
     public function insert($cliente){
 
-        $this->cliente->setNome($cliente['nome']);
-        $this->cliente->setEmail($cliente['email']);
+        $this->entity->setNome($cliente['nome']);
+        $this->entity->setEmail($cliente['email']);
 
-        return $this->clienteMapper->insert($this->cliente);
+        return $this->mapper->insert($this->entity);
     }
 
     /**
@@ -50,7 +39,7 @@ class ClienteService
             $clienteEntity->setNome($cliente['nome']);
             $clienteEntity->setEmail($cliente['email']);
 
-            return $this->clienteMapper->update($clienteEntity);
+            return $this->mapper->update($clienteEntity);
         }
 
         return [
@@ -67,7 +56,7 @@ class ClienteService
         /** @var Cliente $cliente */
         $cliente = $this->findById($id);
         if($cliente){
-            return $this->clienteMapper->delete($cliente);
+            return $this->mapper->delete($cliente);
         }
         else
             return [
@@ -80,7 +69,7 @@ class ClienteService
      * @return array
      */
     public function fetchAll(){
-        return $this->clienteMapper->fetchAll();
+        return $this->mapper->fetchAll();
     }
 
 
@@ -89,7 +78,7 @@ class ClienteService
      * @return null|Cliente
      */
     public function findById($id){
-        return $this->clienteMapper->findById($id);
+        return $this->mapper->findById($id);
     }
 
     /**
