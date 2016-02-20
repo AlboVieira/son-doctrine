@@ -12,26 +12,48 @@ namespace Code\Sistema\Service;
 use Code\Sistema\Entity\AbstractEntity;
 use Code\Sistema\Mapper\AbstractMapper;
 use Code\Sistema\Service\Interfaces\ServiceInterface;
+use Doctrine\ORM\EntityManager;
 
-class AbstractService implements ServiceInterface
+class AbstractService
 {
-    protected $entity;
-    protected $mapper;
+    protected $em;
+    protected $entityName;
 
     /**
      * ClienteService constructor.
      * @param $cliente
      */
-    public function __construct(AbstractEntity $entity, AbstractMapper $mapper)
+    public function __construct(EntityManager $em)
     {
-        $this->entity = $entity;
-        $this->mapper = $mapper;
+        $this->em = $em;
     }
-    public function insert($cliente){}
-    public function update($cliente){}
-    public function delete($cliente){}
-    public function findById($id){}
-    public function fetchAll(){}
 
+    public function getEM(){
+        return $this->em;
+    }
+
+    public function getRepository(){
+        return $this->em->getRepository($this->entityName);
+    }
+
+    public function getReference($id){
+        return $this->em->getReference($this->entityName, $id);
+    }
+
+    public function getEntityName(){
+        return $this->entityName;
+    }
+
+    public function save(AbstractEntity $entity){
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        return $entity;
+    }
+
+    public function remove(AbstractEntity $entity){
+        $this->em->remove($entity);
+        $this->em->flush($entity);
+    }
 
 }

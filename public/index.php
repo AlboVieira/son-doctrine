@@ -6,9 +6,7 @@ use Code\Sistema\Service\ClienteService;
 use Symfony\Component\HttpFoundation\Request;
 
 $app['clienteService'] = function() use ($em){
-    $clienteEntity = new Cliente();
-    $clienteMapper = new ClienteMapper($em);
-    $clienteService = new ClienteService($clienteEntity,$clienteMapper);
+    $clienteService = new ClienteService($em);
     return $clienteService;
 };
 
@@ -24,6 +22,16 @@ $app->get("/", function() use ($app,$clienteService){
 // Recupera todos
 $app->get("/api/clientes",function(Request $request) use ($app,$clienteService){
     $result = $clienteService->entitiesAsArray();
+    return $app->json($result);
+});
+
+//recupera clientes paginados
+$app->get("/api/clientes/grid",function(Request $request) use ($app,$clienteService){
+
+    $params['start'] = $request->query->get('start');
+    $params['end'] = $request->query->get('end');
+
+    $result = $clienteService->getItensPaginados($params);
     return $app->json($result);
 });
 

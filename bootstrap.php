@@ -48,7 +48,7 @@ $em = Doctrine\ORM\EntityManager::create(
         'port'    => '3306',
         'user'    => 'root',
         'password'  => '',
-        'dbname'  => 'trilhando_doctrine',
+        'dbname'  => 'son-doctrine',
     ),
     $config,
     $evm

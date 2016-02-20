@@ -10,42 +10,73 @@ namespace Code\Sistema\Service;
 
 use Code\Sistema\Entity\Cliente;
 use Code\Sistema\Mapper\ClienteMapper;
+use Code\Sistema\Repository\ClienteRepository;
 use Symfony\Component\HttpKernel\Client;
 use Code\Sistema\Service\AbstractService;
 
 class ClienteService extends AbstractService
 {
 
+    protected $entityName = "\\Code\\Sistema\\Entity\\Cliente";
+
     /**
      * @param $cliente
      * @return array
      */
-    public function insert($cliente){
+    public function insert(array $cliente){
 
-        $this->entity->setNome($cliente['nome']);
-        $this->entity->setEmail($cliente['email']);
+        $clienteEntity = new Cliente();
+        $clienteEntity->setNome($cliente['nome']);
+        $clienteEntity->setEmail($cliente['email']);
 
-        return $this->mapper->insert($this->entity);
+        try{
+            $this->save($clienteEntity);
+            return [
+                'success' => true,
+                'id' => $clienteEntity->getId(),
+                'nome' => $clienteEntity->getNome(),
+                'email' => $clienteEntity->getEmail(),
+            ];
+        }
+        catch(\Exception $e){
+            return [
+                'success' => false,
+            ];
+        }
+
+
     }
 
     /**
      * @param $cliente
      */
-    public function update($cliente){
+    public function update(array $cliente){
 
         /** @var Cliente $clienteEntity */
-        $clienteEntity = $this->findById($cliente['id']);
+        $clienteEntity = $this->getReference($cliente['id']);
         if($clienteEntity){
             $clienteEntity->setNome($cliente['nome']);
             $clienteEntity->setEmail($cliente['email']);
 
-            return $this->mapper->update($clienteEntity);
-        }
+            try{
+                $this->save($clienteEntity);
 
+                return [
+                    'success' => true,
+                    'id' => $clienteEntity->getId(),
+                    'nome' => $clienteEntity->getNome(),
+                    'email' => $clienteEntity->getEmail(),
+                ];
+            }
+            catch(\Exception $e){
+                return [
+                    'success'=> false,
+                ];
+            }
+        }
         return [
             'success'=> false
         ];
-
     }
 
     /**
@@ -53,15 +84,24 @@ class ClienteService extends AbstractService
      * @return array
      */
     public function delete($id){
-        /** @var Cliente $cliente */
-        $cliente = $this->findById($id);
-        if($cliente){
-            return $this->mapper->delete($cliente);
+
+        /** @var Cliente $clienteEntity */
+        $clienteEntity = $this->getReference($id);
+        if($clienteEntity){
+
+            try{
+                $this->remove($clienteEntity);
+                return [
+                    'success' => true
+                ];
+            }
+            catch(\Exception $e){
+                return [
+                    'success'=> false
+                ];
+            }
         }
-        else
-            return [
-                'success'=> false
-            ];
+
 
     }
 
@@ -69,16 +109,15 @@ class ClienteService extends AbstractService
      * @return array
      */
     public function fetchAll(){
-        return $this->mapper->fetchAll();
+        return $this->getRepository()->findAll();
     }
-
 
     /**
      * @param $id
      * @return null|Cliente
      */
     public function findById($id){
-        return $this->mapper->findById($id);
+        return $this->getRepository()->find($id);
     }
 
     /**
@@ -106,6 +145,30 @@ class ClienteService extends AbstractService
         }
 
         return $arrClientes;
+    }
+
+    public function getItensPaginados($params){
+
+        $retorno = [];
+
+        $clientes = $this->fetchAll();
+        $count = count($clientes);
+
+        $retorno['totalRecords'] = $count;
+
+        /** @var ClienteRepository $repository */
+        $repository = $this->getRepository();
+        $registros = $repository->getRegistrosPaginados($params);
+        $retorno['totalInPage'] = count($registros);
+
+        /** @var Cliente $cliente */
+        foreach($registros as $cliente){
+            $itens[$cliente->getId()]['nome'] = $cliente->getNome();
+            $itens[$cliente->getId()]['email'] = $cliente->getEmail();
+        }
+        $retorno['data'] = $itens;
+
+        return $retorno;
     }
 
 }

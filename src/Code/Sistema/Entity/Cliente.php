@@ -6,7 +6,7 @@ use Code\Sistema\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Code\Sistema\Repository\ClienteRepository")
  * @ORM\Table(name="clientes")
  *
  */
