@@ -9,6 +9,8 @@
 namespace Code\Sistema\Service;
 
 use Code\Sistema\Entity\Cliente;
+use Code\Sistema\Entity\ClienteProfile;
+use Code\Sistema\Entity\Interesse;
 use Code\Sistema\Mapper\ClienteMapper;
 use Code\Sistema\Repository\ClienteRepository;
 use Symfony\Component\HttpKernel\Client;
@@ -25,9 +27,30 @@ class ClienteService extends AbstractService
      */
     public function insert(array $cliente){
 
+
         $clienteEntity = new Cliente();
         $clienteEntity->setNome($cliente['nome']);
         $clienteEntity->setEmail($cliente['email']);
+
+
+        if(!empty($cliente['cpf']) && !empty($cliente['cpf'])){
+
+            $clienteProfile = new ClienteProfile();
+            $clienteProfile->setCpf($cliente['cpf']);
+            $clienteProfile->setRg($cliente['rg']);
+
+            $this->em->persist($clienteProfile);
+            $clienteEntity->setProfile($clienteProfile);
+        }
+
+        if(!empty($cliente['interesses'])){
+            $interesses = explode(',',$cliente['interesses']);
+            foreach($interesses as $interesse){
+                /** @var Interesse $interesseEntity */
+                $interesseEntity = $this->em->getReference('\\Code\\Sistema\\Entity\\Interesse',$interesse);
+                $clienteEntity->addInteresse($interesseEntity);
+            }
+        }
 
         try{
             $this->save($clienteEntity);

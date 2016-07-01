@@ -45,6 +45,7 @@ class AbstractService
     }
 
     public function save(AbstractEntity $entity){
+
         $this->em->persist($entity);
         $this->em->flush();
 

@@ -1,15 +1,16 @@
 <?php
 require_once '../bootstrap.php';
 use Code\Sistema\Entity\Cliente;
-use Code\Sistema\Mapper\ClienteMapper;
 use Code\Sistema\Service\ClienteService;
 use Symfony\Component\HttpFoundation\Request;
+use Code\Sistema\Service\InteresseService;
+
+/** Inicio Controller Cliente */
 
 $app['clienteService'] = function() use ($em){
     $clienteService = new ClienteService($em);
     return $clienteService;
 };
-
 /** @var ClienteService $clienteService */
 $clienteService = $app['clienteService'];
 
@@ -45,6 +46,9 @@ $app->get("/api/clientes/{id}",function(Request $request, $id) use ($app,$client
 $app->post('/api/clientes',function(Request $request) use ($app,$clienteService){
     $dados['nome'] = $request->get('nome');
     $dados['email'] = $request->get('email');
+    $dados['rg'] = $request->get('rg');
+    $dados['cpf'] = $request->get('cpf');
+    $dados['interesses'] = $request->get('interesses');
     $result = $clienteService->insert($dados);
 
     return $app->json($result);
@@ -66,5 +70,27 @@ $app->delete("/api/clientes/{id}",function(Request $request,$id) use ($app,$clie
     $result = $clienteService->delete($id);
     return $app->json($result);
 });
+/** Fim Controller Cliente */
+
+
+/** Inicio Interesse */
+
+$app['interesseService'] = function() use ($em){
+    return new InteresseService($em);
+};
+
+/** @var InteresseService $interesseService */
+$interesseService = $app['interesseService'];
+
+// Insere um novo
+$app->post('/api/interesse',function(Request $request) use ($app,$interesseService){
+
+    $dados['nome'] = $request->get('nome');
+    $result = $interesseService->insert($dados);
+
+    return $app->json($result);
+});
+
+/** Fim Controller Interesse */
 
 $app->run();
